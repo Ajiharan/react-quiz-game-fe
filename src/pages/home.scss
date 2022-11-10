@@ -1,0 +1,22 @@
+.home-container {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  place-items: center;
+
+  .p-card {
+    width: 40%;
+    height: 40%;
+  }
+}
+
+.home-button-grp {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 2rem;
+  .p-button {
+    width: 50%;
+  }
+}
