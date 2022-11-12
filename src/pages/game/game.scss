@@ -1,0 +1,47 @@
+.game-container {
+  .p-card {
+    width: 80% !important;
+    height: 95% !important;
+  }
+
+  .game-header {
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    &-title {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    &-btn {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+  }
+}
+.question-img {
+  width: 70%;
+  height: 85%;
+  &-wrapper {
+    width: 60rem;
+    height: 25rem;
+  }
+}
+
+.game-over {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  &-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    h5 {
+      margin: 0.5rem;
+    }
+  }
+}

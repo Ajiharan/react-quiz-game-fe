@@ -29,7 +29,9 @@ const Dashboard = (props: any) => {
       .then((res: any) => {
         setUserDetail(res.data);
         axios
-          .get(`/score/getScores/${res.data.user._id}`)
+          .get(`/score/getScores/${res.data.user._id}`, {
+            headers: { quiz: localStorage.getItem("quiz") },
+          })
           .then((res: any) => {
             setMyScoreDetail(res.data);
           })
@@ -43,7 +45,7 @@ const Dashboard = (props: any) => {
   }, []);
 
   const onPlay = (): void => {
-    history.push("/login");
+    history.push("/game");
   };
 
   const logout = (): void => {
@@ -53,7 +55,7 @@ const Dashboard = (props: any) => {
 
   return (
     <React.Fragment>
-      <div className="home-container">
+      <div className="dashboard-container">
         <Card
           title={`Welcome, ${userDetail?.user?.userName}`}
           subTitle="Quiz Game "
