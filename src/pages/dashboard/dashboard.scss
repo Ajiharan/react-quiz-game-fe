@@ -1,6 +1,15 @@
 .dashboard-container {
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../../public/images/score.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
   .p-card {
     width: 70% !important;
     height: 80% !important;
+  }
+  .p-datatable-wrapper {
+    overflow-y: scroll;
+    height: 250px;
   }
 }

@@ -3,15 +3,23 @@ import { useFormik } from "formik";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Password } from "primereact/password";
-import { Dialog } from "primereact/dialog";
+
 import { Divider } from "primereact/divider";
 import { classNames } from "primereact/utils";
 import "./signup.scss";
 import { Card } from "primereact/card";
 import { Link, useHistory } from "react-router-dom";
 import axios from "../../api/Axios";
-
+import useSound from "use-sound";
+import click1 from "../../assets/click1.wav";
+import wrongSound from "../../assets/wrong2.mp3";
+import { useAppSelector } from "../../state/hook/stateHook";
+import { soundEnabled, soundVolume } from "../../state/sound/soundSlice";
 const Signup = (props: any) => {
+  const volume = useAppSelector(soundVolume);
+  const isSoundEnabled = useAppSelector(soundEnabled);
+  const [playButton] = useSound(click1, { volume });
+  const [playError] = useSound(wrongSound, { volume });
   const history = useHistory();
   const formik: any = useFormik({
     initialValues: {
@@ -46,6 +54,10 @@ const Signup = (props: any) => {
     axios
       .post("/user/register", data)
       .then((res: any) => {
+        if (isSoundEnabled) {
+          playButton();
+        }
+
         history.push("/login");
         props.toast.current.show({
           severity: "success",
@@ -56,6 +68,10 @@ const Signup = (props: any) => {
         formik.resetForm();
       })
       .catch((err) => {
+        if (isSoundEnabled) {
+          playError();
+        }
+
         console.log("err", err);
         props.toast.current.show({
           severity: "error",

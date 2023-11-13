@@ -8,8 +8,20 @@ import { useHistory } from "react-router-dom";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-
+import timeOut from "../../assets/timeout1.mp3";
+import useSound from "use-sound";
+import { useAppSelector } from "../../state/hook/stateHook";
+import { soundEnabled, soundVolume } from "../../state/sound/soundSlice";
+import closeSound from "../../assets/close.mp3";
+import wrongSound from "../../assets/wrong2.mp3";
+import crctSound from "../../assets/correct1.mp3";
 const Game = (props: any) => {
+  const volume = useAppSelector(soundVolume);
+  const isSoundEnabled = useAppSelector(soundEnabled);
+  const [playAlarm] = useSound(timeOut, { volume });
+  const [exitSound] = useSound(closeSound, { volume });
+  const [inCorrectSound] = useSound(wrongSound, { volume });
+  const [correctSound] = useSound(crctSound, { volume });
   const answerArray: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const [highScoreDetail, setHighScoreDetail] = useState([]);
   const [myScoreDetail, setMyScoreDetail] = useState([]);
@@ -123,12 +135,22 @@ const Game = (props: any) => {
   };
 
   const wrongAnswer = () => {
+    if (isSoundEnabled) {
+      inCorrectSound();
+    }
+
     setLivesCount(livesCount - 1);
 
     setWrongCount(wrongCount + 1);
   };
 
   useEffect(() => {
+    // console.log("queAns", queAns);
+    if (levelTimer < 6 && levelTimer > 0) {
+      if (isSoundEnabled) {
+        playAlarm();
+      }
+    }
     if (queAns && levelTimer > 0) {
       startTimer();
     }
@@ -144,7 +166,7 @@ const Game = (props: any) => {
   };
 
   const getRandomQuestion = (): void => {
-    Axios.get("https://marcconrad.com/uob/smile/api.php")
+    Axios.get("https://marcconrad.com/uob/tomato/api.php?out=json")
       .then((res: any) => {
         setQueAns(res.data);
         setDisabled(false);
@@ -183,12 +205,20 @@ const Game = (props: any) => {
       wrongAnswer();
       return;
     }
+    if (isSoundEnabled) {
+      correctSound();
+    }
+
     setQueAns(null);
     setLevelTimer(cuLevelTimer);
     setScore(score + 2);
     getQuestion();
   };
   const logout = (): void => {
+    if (isSoundEnabled) {
+      exitSound();
+    }
+
     localStorage.clear();
     history.replace("/login");
   };
@@ -196,9 +226,6 @@ const Game = (props: any) => {
   const header = (
     <div className="game-header">
       <div className="game-header-title">
-        <h5>Time Ends {levelTimer}</h5>
-        <h5>Lives {livesCount}</h5>
-        <h5> Points {score} </h5>
         <h5>Level {level}</h5>
         <h5>#{userDetail?.user?.userName}</h5>
       </div>
@@ -220,31 +247,58 @@ const Game = (props: any) => {
         <Card header={header}>
           {livesCount > 0 ? (
             <div className="grid">
-              <div className="col-12 md:col-12 lg:col-12 sm:col-12">
-                <div className="question-img-wrapper">
-                  <img
-                    src={queAns?.question}
-                    alt="question"
-                    className="question-img"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-              <div className="col-12 md:col-8 lg:col-8 sm:col-12">
-                <div className="grid">
-                  {answerArray.map((value: number) => (
-                    <div
-                      className="col-12 md:col-3 lg:col-3 sm:col-4"
-                      key={value}
-                      onClick={() => btnClick(value)}
-                    >
-                      <Button
-                        disabled={isDisabled}
-                        label={value + ""}
-                        className="p-button-secondary"
-                      />
+              <div className="row">
+                <div className="col-8 md-8 lg-8 sm-8">
+                  <div className="grid">
+                    <div className="col-12 md:col-12 lg:col-12 sm:col-12">
+                      <div className="question-img-wrapper">
+                        <img
+                          src={queAns?.question}
+                          alt="question"
+                          className="question-img"
+                          loading="lazy"
+                        />
+                      </div>
                     </div>
-                  ))}
+                    <div className="col-12 md:col-8 lg:col-8 sm:col-12">
+                      <div className="grid">
+                        {answerArray.map((value: number) => (
+                          <div
+                            className="col-12 md:col-2 lg:col-2 sm:col-4"
+                            key={value}
+                            onClick={() => btnClick(value)}
+                          >
+                            <Button
+                              disabled={isDisabled}
+                              label={value + ""}
+                              className="p-button-secondary"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-4 md-4 lg-4 sm-4">
+                  <div className="flex p-2">
+                    <h4 style={{ flex: 1 }}>Time Ends </h4>
+                    <h3
+                      className={
+                        levelTimer > 5 ? "text-success" : "text-danger"
+                      }
+                    >
+                      {" "}
+                      {levelTimer}sec
+                    </h3>
+                  </div>
+                  <div className="flex p-2 mt-4">
+                    <h4 style={{ flex: 1 }}>Lives </h4>
+                    <h3> {livesCount}</h3>
+                  </div>
+                  <div className="flex p-2 mt-4">
+                    <h4 style={{ flex: 1 }}>Points </h4>
+                    <h3> {score}</h3>
+                  </div>
                 </div>
               </div>
             </div>
@@ -266,7 +320,7 @@ const Game = (props: any) => {
                 />
               </div>
               <div>
-                <div className="grid">
+                <div className="grid table-custom">
                   <div className="col-12 md:col-6 lg:col-6 sm:col-12">
                     <h5>#HighScores</h5>
                     <DataTable

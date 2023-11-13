@@ -1,7 +1,7 @@
 .App {
   width: 100vw;
   height: 100vh;
-  background-image: url("../public/images/ba1.jpg");
+  background-image: url("../public/images/game.jpg");
   background-size: cover;
   background-repeat: no-repeat;
 }

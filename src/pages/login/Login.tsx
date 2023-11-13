@@ -8,8 +8,17 @@ import "./login.scss";
 import { Card } from "primereact/card";
 import { Link, useHistory } from "react-router-dom";
 import axios from "../../api/Axios";
+import useSound from "use-sound";
+import click1 from "../../assets/click1.wav";
+import wrongSound from "../../assets/wrong2.mp3";
+import { useAppSelector } from "../../state/hook/stateHook";
+import { soundEnabled, soundVolume } from "../../state/sound/soundSlice";
 
 const Login = (props: any) => {
+  const volume = useAppSelector(soundVolume);
+  const isSoundEnabled = useAppSelector(soundEnabled);
+  const [playButton] = useSound(click1, { volume });
+  const [playError] = useSound(wrongSound, { volume });
   const history = useHistory();
   const formik: any = useFormik({
     initialValues: {
@@ -37,6 +46,10 @@ const Login = (props: any) => {
     axios
       .post("/user/login", data)
       .then((res: any) => {
+        if (isSoundEnabled) {
+          playButton();
+        }
+
         localStorage.setItem("quiz", res.data);
         history.push("/dashboard");
         props.toast.current.show({
@@ -48,6 +61,10 @@ const Login = (props: any) => {
         formik.resetForm();
       })
       .catch((err) => {
+        if (isSoundEnabled) {
+          playError();
+        }
+
         console.log("err", err);
         props.toast.current.show({
           severity: "error",
@@ -69,13 +86,29 @@ const Login = (props: any) => {
     );
   };
 
+  const navigateToHome = (): void => {
+    history.push("");
+  };
+
   return (
     <div className="form-demo">
       <div className="signIn-container">
         <Card>
           <div className="flex justify-content-center">
             <div className="card">
-              <h5 className="text-center">SignIn Account</h5>
+              <div
+                className="flex align-items-center"
+                style={{ flexDirection: "column" }}
+              >
+                <Button
+                  icon="pi pi-home"
+                  className="p-button-sm p-button-rounded p-button-success "
+                  aria-label="Bookmark"
+                  onClick={navigateToHome}
+                />
+                <h5 className="text-center mt-1">SignIn Account</h5>
+              </div>
+
               <form onSubmit={formik.handleSubmit} className="p-fluid">
                 <div className="field">
                   <span className="p-float-label">

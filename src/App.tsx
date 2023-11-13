@@ -8,8 +8,10 @@ import React, { useRef } from "react";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Game from "./pages/game/Game";
 import ProtectedRoute from "./ProtectedRoute";
+
 function App() {
   const toast = useRef<any>(null);
+
   return (
     <div className="App">
       <Toast ref={toast} />

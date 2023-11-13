@@ -6,7 +6,16 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { useHistory } from "react-router-dom";
 import "./dashboard.scss";
+import { useAppSelector } from "../../state/hook/stateHook";
+import click1 from "../../assets/click1.wav";
+import { soundEnabled, soundVolume } from "../../state/sound/soundSlice";
+import closeSound from "../../assets/close.mp3";
+import useSound from "use-sound";
 const Dashboard = (props: any) => {
+  const volume = useAppSelector(soundVolume);
+  const isSoundEnabled = useAppSelector(soundEnabled);
+  const [exitSound] = useSound(closeSound, { volume });
+  const [playButton] = useSound(click1, { volume });
   const [highScoreDetail, setHighScoreDetail] = useState([]);
   const [myScoreDetail, setMyScoreDetail] = useState([]);
   const [userDetail, setUserDetail] = useState<any>(null);
@@ -45,10 +54,18 @@ const Dashboard = (props: any) => {
   }, []);
 
   const onPlay = (): void => {
+    if (isSoundEnabled) {
+      playButton();
+    }
+
     history.push("/game");
   };
 
   const logout = (): void => {
+    if (isSoundEnabled) {
+      exitSound();
+    }
+
     localStorage.clear();
     history.replace("/login");
   };
@@ -72,7 +89,7 @@ const Dashboard = (props: any) => {
               onClick={logout}
             />
           </div>
-          <div className="grid">
+          <div className="grid data-table">
             <div className="col-12 md:col-6 lg:col-6 sm:col-12">
               <h5>#HighScores</h5>
               <DataTable value={highScoreDetail} responsiveLayout="scroll">
