@@ -13,14 +13,21 @@ import { useAppSelector } from "../state/hook/stateHook";
 import { soundEnabled, soundVolume } from "../state/sound/soundSlice";
 import { useDispatch } from "react-redux";
 import { setSoundConfig } from "../state/sound/soundAction";
-
+import { ColorPicker } from "primereact/colorpicker";
 import { Slider } from "primereact/slider";
-
+import { InputNumber } from "primereact/inputnumber";
 import { TriStateCheckbox } from "primereact/tristatecheckbox";
+import { styleSelector } from "../state/style/styleSlice";
+import { setStyleConfig } from "../state/style/styleAction";
+import { MyComponentBuilder } from "../builder/builder";
+
+const builder = MyComponentBuilder();
 
 const Home = () => {
   const dispatch = useDispatch();
   const isSoundEnabled = useAppSelector(soundEnabled);
+  const styleConfig = useAppSelector(styleSelector);
+
   const volume = useAppSelector(soundVolume);
   const [viewDialog, setViewDialog] = useState(false);
   const [viewSoundConfig, setViewSoundConfig] = useState(false);
@@ -28,6 +35,13 @@ const Home = () => {
   const [highScoreDetail, setHighScoreDetail] = useState([]);
   const history = useHistory();
   const [playButton] = useSound(click1, { volume });
+
+  const highScoreTitle = builder
+    .withText("#HighScore List")
+
+    .withColor(styleConfig.color)
+    .withSize(styleConfig.size)
+    .build();
 
   useEffect(() => {
     axios
@@ -67,7 +81,7 @@ const Home = () => {
               onClick={onStart}
             />
             <Button
-              label="Sound Settings"
+              label="Settings"
               className="p-button-info"
               onClick={onSoundClick}
             />
@@ -91,7 +105,7 @@ const Home = () => {
         modal
         onHide={() => setViewDialog(false)}
       >
-        <h5>#HighScores</h5>
+        {highScoreTitle}
         <DataTable value={highScoreDetail} responsiveLayout="scroll">
           <Column field="userName" header="Username"></Column>
           <Column field="highScore" header="High Score"></Column>
@@ -134,6 +148,42 @@ const Home = () => {
                 value={volume * 100}
                 disabled={!isSoundEnabled}
                 className="w-14rem"
+              />
+            </div>
+          </div>
+          <div className="row mt-4 p-2" style={{ width: "100%" }}>
+            <div className="col-6">
+              <label>Color</label>
+            </div>
+            <div className="col-6">
+              <ColorPicker
+                format="rgb"
+                value={styleConfig.color}
+                onChange={(e) =>
+                  dispatch(setStyleConfig(e.value, styleConfig.size))
+                }
+              />
+            </div>
+          </div>
+          <div className="row mt-4 p-2" style={{ width: "100%" }}>
+            <div className="col-6">
+              <label>Size</label>
+            </div>
+            <div className="col-6">
+              <InputNumber
+                inputId="vertical"
+                value={parseInt(styleConfig.size)}
+                onValueChange={(e) =>
+                  dispatch(setStyleConfig(styleConfig.color, e.value + "px"))
+                }
+                mode="decimal"
+                showButtons
+                buttonLayout="vertical"
+                style={{ width: "4rem" }}
+                decrementButtonClassName="p-button-secondary"
+                incrementButtonClassName="p-button-secondary"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
               />
             </div>
           </div>

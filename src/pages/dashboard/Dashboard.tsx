@@ -11,6 +11,11 @@ import click1 from "../../assets/click1.wav";
 import { soundEnabled, soundVolume } from "../../state/sound/soundSlice";
 import closeSound from "../../assets/close.mp3";
 import useSound from "use-sound";
+import { styleSelector } from "../../state/style/styleSlice";
+import { MyComponentBuilder } from "../../builder/builder";
+
+const builder = MyComponentBuilder();
+
 const Dashboard = (props: any) => {
   const volume = useAppSelector(soundVolume);
   const isSoundEnabled = useAppSelector(soundEnabled);
@@ -19,8 +24,22 @@ const Dashboard = (props: any) => {
   const [highScoreDetail, setHighScoreDetail] = useState([]);
   const [myScoreDetail, setMyScoreDetail] = useState([]);
   const [userDetail, setUserDetail] = useState<any>(null);
+  const styleConfig = useAppSelector(styleSelector);
 
   const history = useHistory();
+
+  const highScoreTitle = builder
+    .withText("#HighScores")
+    .withColor(styleConfig.color)
+    .withSize(styleConfig.size)
+    .build();
+
+  const myScoreTitle = builder
+    .withText("#MyScores")
+    .withColor(styleConfig.color)
+    .withSize(styleConfig.size)
+    .build();
+
   useEffect(() => {
     axios
       .get("/board/scores")
@@ -91,14 +110,14 @@ const Dashboard = (props: any) => {
           </div>
           <div className="grid data-table">
             <div className="col-12 md:col-6 lg:col-6 sm:col-12">
-              <h5>#HighScores</h5>
+              {highScoreTitle}
               <DataTable value={highScoreDetail} responsiveLayout="scroll">
                 <Column field="userName" header="Username"></Column>
                 <Column field="highScore" header="High Score"></Column>
               </DataTable>
             </div>
             <div className="col-12 md:col-6 lg:col-6 sm:col-12">
-              <h5>#MyScores</h5>
+              {myScoreTitle}
               <DataTable value={myScoreDetail} responsiveLayout="scroll">
                 <Column field="userName" header="Username"></Column>
                 <Column field="score" header="Score"></Column>

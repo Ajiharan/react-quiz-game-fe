@@ -15,12 +15,25 @@ import click1 from "../../assets/click1.wav";
 import wrongSound from "../../assets/wrong2.mp3";
 import { useAppSelector } from "../../state/hook/stateHook";
 import { soundEnabled, soundVolume } from "../../state/sound/soundSlice";
+import { styleSelector } from "../../state/style/styleSlice";
+import { MyComponentBuilder } from "../../builder/builder";
+
+const builder = MyComponentBuilder();
 const Signup = (props: any) => {
   const volume = useAppSelector(soundVolume);
   const isSoundEnabled = useAppSelector(soundEnabled);
+  const styleConfig = useAppSelector(styleSelector);
   const [playButton] = useSound(click1, { volume });
   const [playError] = useSound(wrongSound, { volume });
   const history = useHistory();
+
+  const signUpTitle = builder
+    .withText("Register Account")
+    .withClass("text-center")
+    .withColor(styleConfig.color)
+    .withSize(styleConfig.size)
+    .build();
+
   const formik: any = useFormik({
     initialValues: {
       userName: "",
@@ -113,7 +126,7 @@ const Signup = (props: any) => {
         <Card>
           <div className="flex justify-content-center">
             <div className="card">
-              <h5 className="text-center">Register Account</h5>
+              {signUpTitle}
               <form onSubmit={formik.handleSubmit} className="p-fluid">
                 <div className="field">
                   <span className="p-float-label">

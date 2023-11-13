@@ -15,6 +15,11 @@ import { soundEnabled, soundVolume } from "../../state/sound/soundSlice";
 import closeSound from "../../assets/close.mp3";
 import wrongSound from "../../assets/wrong2.mp3";
 import crctSound from "../../assets/correct1.mp3";
+import { styleSelector } from "../../state/style/styleSlice";
+import { MyComponentBuilder } from "../../builder/builder";
+
+const builder = MyComponentBuilder();
+
 const Game = (props: any) => {
   const volume = useAppSelector(soundVolume);
   const isSoundEnabled = useAppSelector(soundEnabled);
@@ -41,9 +46,21 @@ const Game = (props: any) => {
   const [hasFinished, setFinished] = useState<boolean>(false);
   const [isDisabled, setDisabled] = useState<boolean>(false);
   const [wrongCount, setWrongCount] = useState(0);
-
+  const styleConfig = useAppSelector(styleSelector);
   const intervalRef = useRef<any>(null);
   const history = useHistory();
+
+  const highScoreTitle = builder
+    .withText("#HighScores")
+    .withColor(styleConfig.color)
+    .withSize(styleConfig.size)
+    .build();
+
+  const myScoreTitle = builder
+    .withText("#MyScores")
+    .withColor(styleConfig.color)
+    .withSize(styleConfig.size)
+    .build();
 
   const confirm = () => {
     confirmDialog({
@@ -322,7 +339,7 @@ const Game = (props: any) => {
               <div>
                 <div className="grid table-custom">
                   <div className="col-12 md:col-6 lg:col-6 sm:col-12">
-                    <h5>#HighScores</h5>
+                    {highScoreTitle}
                     <DataTable
                       value={highScoreDetail}
                       responsiveLayout="scroll"
@@ -332,7 +349,7 @@ const Game = (props: any) => {
                     </DataTable>
                   </div>
                   <div className="col-12 md:col-6 lg:col-6 sm:col-12">
-                    <h5>#MyScores</h5>
+                    {myScoreTitle}
                     <DataTable value={myScoreDetail} responsiveLayout="scroll">
                       <Column field="userName" header="Username"></Column>
                       <Column field="score" header="Score"></Column>

@@ -5,9 +5,11 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import soundReducer from "./sound/soundSlice";
+import styleReducer from "./style/styleSlice";
 
 const appReducer = combineReducers({
   sound: soundReducer,
+  style: styleReducer,
 });
 
 const rootReducer = (state: any, action: PayloadAction<any>) => {

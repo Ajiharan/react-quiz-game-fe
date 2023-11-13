@@ -13,13 +13,25 @@ import click1 from "../../assets/click1.wav";
 import wrongSound from "../../assets/wrong2.mp3";
 import { useAppSelector } from "../../state/hook/stateHook";
 import { soundEnabled, soundVolume } from "../../state/sound/soundSlice";
+import { MyComponentBuilder } from "../../builder/builder";
+import { styleSelector } from "../../state/style/styleSlice";
+
+const builder = MyComponentBuilder();
 
 const Login = (props: any) => {
   const volume = useAppSelector(soundVolume);
   const isSoundEnabled = useAppSelector(soundEnabled);
+  const styleConfig = useAppSelector(styleSelector);
   const [playButton] = useSound(click1, { volume });
   const [playError] = useSound(wrongSound, { volume });
   const history = useHistory();
+
+  const signinTitle = builder
+    .withText("SignIn Account")
+    .withColor(styleConfig.color)
+    .withSize(styleConfig.size)
+    .build();
+
   const formik: any = useFormik({
     initialValues: {
       userName: "",
@@ -106,7 +118,7 @@ const Login = (props: any) => {
                   aria-label="Bookmark"
                   onClick={navigateToHome}
                 />
-                <h5 className="text-center mt-1">SignIn Account</h5>
+                {signinTitle}
               </div>
 
               <form onSubmit={formik.handleSubmit} className="p-fluid">
